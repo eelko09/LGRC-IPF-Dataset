@@ -6,7 +6,6 @@ library(Biobase)
 library(limma)
 library(tidyverse)
 library(stringr)
-library(readxl)
 
 myGeo1 <- getGEO("gse47460")[[1]] # pull out first half of expressionset
 dim(myGeo1)# 429 samples, 15261 features
@@ -118,12 +117,13 @@ summary(results)
 results_all <- topTable(fit2,adjust = "fdr", n=Inf)
 
 
-
-#### Subsetting patients with IPF from ILD group based off external excel file ####
-IPF_Sample_Names <- read_excel("~/LGRC_Unique Samples_611/ER Stress Dataset-Vikas_Jose_VA 1_SPP1_SCGB1A1.xlsx")
+#### Subsetting patients with IPF from ILD group based off external .csv file ####
+IPF_Sample_Names <- read.csv("path-to-Patient_IDs_IPF.csv")
 IPF_Sample_Names <- IPF_Sample_Names$Symbol
-sampleNames(totalExpressionSet) <- row.names(expressionDataTranspose)
-myGeo_IPF = totalExpressionSet[, sampleNames(totalExpressionSet) %in% IPF_Sample_Names]
+# Resetting sampleNames in totalExpressionSet to match formating in .csv file
+sampleNames(totalExpressionSet) <- row.names(expressionDataTranspose) 
+# Creating a subset of totalExpressionSet only containing IPF and Ctrl samples from .csv file
+myGeo_IPF <- totalExpressionSet[, sampleNames(totalExpressionSet) %in% IPF_Sample_Names]
 dim(myGeo_IPF) #15261  263 
 
 ## Analyzing differential expression with LIMMA
